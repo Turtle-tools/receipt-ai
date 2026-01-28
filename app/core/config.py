@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     r2_account_id: Optional[str] = None
     r2_bucket: Optional[str] = None
     
+    # Webhooks
+    webhook_secret: Optional[str] = None  # HMAC secret for webhook verification
+    
     # Stripe (for billing)
     stripe_secret_key: Optional[str] = None
     stripe_webhook_secret: Optional[str] = None
