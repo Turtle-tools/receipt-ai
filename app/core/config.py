@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     # Database (for future use)
     database_url: Optional[str] = None
     
+    # Redis (for Celery background tasks)
+    redis_url: Optional[str] = None
+    
     # AI Extraction
     openai_api_key: Optional[str] = None
     anthropic_api_key: Optional[str] = None
