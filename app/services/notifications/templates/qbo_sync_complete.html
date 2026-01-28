@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+        .content { background: #fff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
+        .card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .value { font-size: 18px; font-weight: 600; color: #111827; }
+        .footer { text-align: center; color: #6b7280; font-size: 14px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0;">✅ Synced to QuickBooks</h1>
+        </div>
+        
+        <div class="content">
+            <p>Your document has been successfully synced to QuickBooks Online!</p>
+            
+            <div class="card">
+                <div class="label">Company</div>
+                <div class="value">{{company_name}}</div>
+            </div>
+            
+            <div class="card">
+                <div class="label">QuickBooks ID</div>
+                <div class="value">{{qbo_id}}</div>
+            </div>
+            
+            <p>The transaction is now live in your QuickBooks account. You can review and edit it there if needed.</p>
+            
+            <div class="footer">
+                <p>Receipt AI by IronClad CAS<br>
+                Automated document processing for accounting firms</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
