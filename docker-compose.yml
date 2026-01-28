@@ -1,0 +1,44 @@
+# Receipt AI - Docker Compose for local development
+
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=development
+      - DATABASE_URL=postgresql://receiptai:receiptai@db:5432/receiptai
+      - STORAGE_TYPE=local
+      - LOCAL_STORAGE_PATH=/app/uploads
+    env_file:
+      - .env
+    volumes:
+      - ./uploads:/app/uploads
+      - ./app:/app/app  # Hot reload
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=receiptai
+      - POSTGRES_PASSWORD=receiptai
+      - POSTGRES_DB=receiptai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Optional: Redis for caching/queues
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
