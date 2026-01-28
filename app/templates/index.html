@@ -3,147 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt AI - Document Processor</title>
+    <title>Receipt AI - Smart Document Processing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <style>
-        .drop-zone {
-            border: 2px dashed #cbd5e1;
-            transition: all 0.3s ease;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
         }
-        .drop-zone.dragover {
+    </script>
+    <style>
+        /* Smooth transitions everywhere */
+        * { transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s; }
+        
+        /* Upload zone states */
+        .upload-zone {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px dashed #cbd5e1;
+        }
+        .upload-zone:hover {
             border-color: #3b82f6;
-            background-color: #eff6ff;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        .upload-zone.dragover {
+            border-color: #2563eb;
+            background: #dbeafe;
+            transform: scale(1.01);
+        }
+        
+        /* Button press effect */
+        .btn-press:active { transform: scale(0.98); }
+        
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        
+        /* Pulse animation */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        .pulse-ring::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: inherit;
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+        
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Success checkmark */
+        @keyframes checkmark {
+            0% { stroke-dashoffset: 100; }
+            100% { stroke-dashoffset: 0; }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen font-sans antialiased">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between">
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <span class="text-3xl">🧾</span>
-                    <h1 class="text-xl font-bold text-gray-900">Receipt AI</h1>
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20">
+                        <span class="text-xl">🧾</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900">Receipt AI</h1>
+                        <p class="text-xs text-gray-500 -mt-0.5">Smart Document Processing</p>
+                    </div>
                 </div>
+                
+                <!-- QBO Status -->
                 <div class="flex items-center space-x-4">
-                    <span id="qbo-status" class="text-sm text-gray-500">
-                        QBO: Disconnected
-                    </span>
+                    <div id="qbo-status" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-gray-100">
+                        <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                        <span class="text-sm text-gray-600">QuickBooks</span>
+                    </div>
                     <button 
                         onclick="connectQBO()"
-                        class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"
+                        class="btn-press px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                     >
-                        Connect QuickBooks
+                        Connect
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <!-- Upload Section -->
-        <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Upload Document</h2>
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Upload Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8 fade-in">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Upload Your Documents</h2>
+                <p class="text-gray-500">Receipts, invoices, bank statements, checks — we'll extract everything</p>
+            </div>
             
+            <!-- Upload Zone -->
             <div 
-                id="drop-zone"
-                class="drop-zone rounded-lg p-8 text-center cursor-pointer"
+                id="upload-zone"
+                class="upload-zone rounded-2xl p-12 text-center cursor-pointer transition-all duration-200"
                 onclick="document.getElementById('file-input').click()"
             >
                 <input 
                     type="file" 
                     id="file-input" 
                     accept=".pdf,.png,.jpg,.jpeg,.heic"
+                    multiple
                     class="hidden"
                     onchange="handleFileSelect(event)"
                 >
-                <div class="text-gray-400 mb-2">
-                    <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <!-- Upload Icon -->
+                <div class="mx-auto w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                     </svg>
                 </div>
-                <p class="text-gray-600">
-                    <span class="font-medium text-blue-600">Click to upload</span> or drag and drop
+                
+                <p class="text-lg font-medium text-gray-700 mb-1">
+                    Drop files here or <span class="text-primary-600">browse</span>
                 </p>
-                <p class="text-sm text-gray-500 mt-1">
-                    PDF, PNG, JPG up to 50MB
+                <p class="text-sm text-gray-400">
+                    PDF, PNG, JPG • Up to 50MB
                 </p>
             </div>
             
-            <!-- Upload Progress -->
-            <div id="upload-progress" class="hidden mt-4">
-                <div class="flex items-center justify-between mb-1">
-                    <span class="text-sm text-gray-600" id="upload-filename"></span>
-                    <span class="text-sm text-gray-600" id="upload-status"></span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            <!-- Upload Progress (hidden by default) -->
+            <div id="upload-progress" class="hidden mt-6 fade-in">
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate" id="upload-filename">document.pdf</p>
+                            <p class="text-xs text-gray-500" id="upload-status">Processing...</p>
+                        </div>
+                        <span class="text-sm font-medium text-primary-600" id="upload-percent">0%</span>
+                    </div>
+                    <div class="mt-3 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Documents List -->
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Recent Documents</h2>
-            </div>
-            <div id="documents-list" class="divide-y divide-gray-200">
-                <!-- Documents will be loaded here -->
-                <div class="p-8 text-center text-gray-500">
-                    No documents uploaded yet
+        <!-- Recent Documents -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 fade-in">
+            <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Recent Documents</h2>
+                    <p class="text-sm text-gray-500">Your uploaded files and extraction status</p>
                 </div>
+                <button class="text-sm text-primary-600 font-medium hover:text-primary-700">
+                    View All →
+                </button>
+            </div>
+            
+            <div id="documents-list">
+                <!-- Empty State -->
+                <div id="empty-state" class="py-16 text-center">
+                    <div class="mx-auto w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
+                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">No documents yet</h3>
+                    <p class="text-gray-500 mb-4">Upload your first document to get started</p>
+                    <button 
+                        onclick="document.getElementById('file-input').click()"
+                        class="btn-press inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 shadow-sm"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Upload Document
+                    </button>
+                </div>
+                
+                <!-- Document rows will be inserted here -->
             </div>
         </div>
     </main>
 
     <!-- Extraction Result Modal -->
-    <div id="result-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-lg bg-white">
-            <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-semibold text-gray-900">Extracted Data</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div id="modal-content" class="py-4">
-                <!-- Extracted data will be shown here -->
-            </div>
-            <div class="flex justify-end space-x-3 pt-4 border-t">
-                <button onclick="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
-                    Close
-                </button>
-                <button onclick="pushToQBO()" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                    Push to QuickBooks
-                </button>
+    <div id="result-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm" onclick="closeModal()"></div>
+        
+        <!-- Modal -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl fade-in">
+                <!-- Header -->
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Extraction Complete</h3>
+                            <p class="text-sm text-gray-500">Review the extracted data below</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Content -->
+                <div id="modal-content" class="p-6">
+                    <!-- Extracted data will be shown here -->
+                </div>
+                
+                <!-- Footer -->
+                <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+                    <button onclick="closeModal()" class="btn-press px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button onclick="pushToQBO()" class="btn-press px-4 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-sm inline-flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Push to QuickBooks
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // File upload handling
-        const dropZone = document.getElementById('drop-zone');
+        // Upload zone interactions
+        const uploadZone = document.getElementById('upload-zone');
         
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults);
+            uploadZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
         });
         
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'));
+            uploadZone.addEventListener(eventName, () => uploadZone.classList.add('dragover'));
         });
         
         ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'));
+            uploadZone.addEventListener(eventName, () => uploadZone.classList.remove('dragover'));
         });
         
-        dropZone.addEventListener('drop', (e) => {
+        uploadZone.addEventListener('drop', e => {
             const files = e.dataTransfer.files;
             if (files.length) handleFiles(files);
         });
@@ -162,48 +308,54 @@
             const progressDiv = document.getElementById('upload-progress');
             const filenameSpan = document.getElementById('upload-filename');
             const statusSpan = document.getElementById('upload-status');
+            const percentSpan = document.getElementById('upload-percent');
             const progressBar = document.getElementById('progress-bar');
+            const emptyState = document.getElementById('empty-state');
             
             progressDiv.classList.remove('hidden');
             filenameSpan.textContent = file.name;
             statusSpan.textContent = 'Uploading...';
+            percentSpan.textContent = '0%';
             progressBar.style.width = '0%';
             
             const formData = new FormData();
             formData.append('file', file);
             
             try {
-                // Simulate progress
-                progressBar.style.width = '30%';
+                updateProgress(30, 'Uploading...');
                 
                 const response = await fetch('/api/documents/upload', {
                     method: 'POST',
                     body: formData
                 });
                 
-                progressBar.style.width = '60%';
-                
-                if (!response.ok) {
-                    throw new Error('Upload failed');
-                }
+                if (!response.ok) throw new Error('Upload failed');
                 
                 const data = await response.json();
-                progressBar.style.width = '100%';
-                statusSpan.textContent = 'Processing...';
+                updateProgress(60, 'Analyzing document...');
                 
-                // Poll for extraction result
                 await pollExtraction(data.id);
                 
-                statusSpan.textContent = 'Done!';
-                setTimeout(() => progressDiv.classList.add('hidden'), 2000);
+                updateProgress(100, 'Complete!');
+                statusSpan.classList.add('text-green-600');
                 
-                // Refresh documents list
-                loadDocuments();
+                setTimeout(() => {
+                    progressDiv.classList.add('hidden');
+                    statusSpan.classList.remove('text-green-600');
+                }, 2000);
+                
+                if (emptyState) emptyState.classList.add('hidden');
                 
             } catch (error) {
                 statusSpan.textContent = 'Error: ' + error.message;
-                progressBar.classList.replace('bg-blue-600', 'bg-red-600');
+                statusSpan.classList.add('text-red-600');
             }
+        }
+        
+        function updateProgress(percent, status) {
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('upload-percent').textContent = percent + '%';
+            document.getElementById('upload-status').textContent = status;
         }
         
         async function pollExtraction(docId, maxAttempts = 30) {
@@ -218,6 +370,7 @@
                     throw new Error(data.error || 'Extraction failed');
                 }
                 
+                updateProgress(60 + Math.min(i * 2, 35), 'Extracting data...');
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
             throw new Error('Extraction timed out');
@@ -227,9 +380,7 @@
             const response = await fetch(`/api/documents/${docId}/extracted`);
             const data = await response.json();
             
-            const modalContent = document.getElementById('modal-content');
-            modalContent.innerHTML = formatExtractedData(data);
-            
+            document.getElementById('modal-content').innerHTML = formatExtractedData(data);
             document.getElementById('result-modal').classList.remove('hidden');
             document.getElementById('result-modal').dataset.docId = docId;
         }
@@ -238,27 +389,38 @@
             if (data.receipt_data) {
                 const r = data.receipt_data;
                 return `
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Vendor:</span>
-                            <span class="font-medium">${r.vendor || 'Unknown'}</span>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Vendor</p>
+                                <p class="text-lg font-semibold text-gray-900">${r.vendor || 'Unknown'}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Amount</p>
+                                <p class="text-lg font-semibold text-gray-900">$${r.total_amount || '0.00'}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Date</p>
+                                <p class="text-lg font-semibold text-gray-900">${r.date || 'Unknown'}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Category</p>
+                                <p class="text-lg font-semibold text-gray-900">${r.category_suggestion || 'Uncategorized'}</p>
+                            </div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Amount:</span>
-                            <span class="font-medium">$${r.total_amount || '0.00'}</span>
+                        ${r.confidence ? `
+                        <div class="flex items-center space-x-2 text-sm">
+                            <span class="text-gray-500">Confidence:</span>
+                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 rounded-full" style="width: ${r.confidence * 100}%"></div>
+                            </div>
+                            <span class="font-medium text-gray-700">${Math.round(r.confidence * 100)}%</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Date:</span>
-                            <span class="font-medium">${r.date || 'Unknown'}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Category:</span>
-                            <span class="font-medium">${r.category_suggestion || 'Uncategorized'}</span>
-                        </div>
+                        ` : ''}
                     </div>
                 `;
             }
-            return '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            return `<pre class="bg-gray-50 rounded-xl p-4 text-sm overflow-auto">${JSON.stringify(data, null, 2)}</pre>`;
         }
         
         function closeModal() {
@@ -267,18 +429,14 @@
         
         async function pushToQBO() {
             const docId = document.getElementById('result-modal').dataset.docId;
-            alert('Push to QBO: ' + docId + ' (not implemented yet)');
+            alert('Push to QBO: ' + docId + '\n\nThis feature requires QuickBooks connection.');
         }
         
         async function connectQBO() {
             window.location.href = '/api/qbo/connect';
         }
         
-        async function loadDocuments() {
-            // TODO: Implement document list loading
-        }
-        
-        // Check QBO status on load
+        // Check QBO status
         async function checkQBOStatus() {
             try {
                 const response = await fetch('/api/qbo/status');
@@ -286,9 +444,11 @@
                 const statusEl = document.getElementById('qbo-status');
                 
                 if (data.connected) {
-                    statusEl.innerHTML = `<span class="text-green-600">QBO: ${data.company_name}</span>`;
-                } else {
-                    statusEl.innerHTML = '<span class="text-gray-500">QBO: Disconnected</span>';
+                    statusEl.innerHTML = `
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span class="text-sm font-medium text-green-700">${data.company_name || 'Connected'}</span>
+                    `;
+                    statusEl.className = 'flex items-center space-x-2 px-3 py-1.5 rounded-full bg-green-100';
                 }
             } catch (error) {
                 console.error('Failed to check QBO status:', error);
