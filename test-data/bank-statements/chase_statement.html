@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page { size: letter; margin: 0.5in; }
+        body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; }
+        .header { background: #0c2f54; color: white; padding: 20px; margin-bottom: 20px; }
+        .logo { font-size: 24pt; font-weight: bold; }
+        .account-info { margin: 20px 0; }
+        .account-info table { width: 100%; border-collapse: collapse; }
+        .account-info td { padding: 5px; border-bottom: 1px solid #ddd; }
+        .section-title { background: #0c2f54; color: white; padding: 8px; font-weight: bold; margin-top: 20px; }
+        .transactions table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+        .transactions th { background: #f0f0f0; padding: 8px; text-align: left; border-bottom: 2px solid #0c2f54; }
+        .transactions td { padding: 6px; border-bottom: 1px solid #ddd; }
+        .amount { text-align: right; }
+        .check-image { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #fafafa; }
+        .check { border: 2px solid #000; padding: 20px; background: white; position: relative; }
+        .check-number { position: absolute; top: 10px; right: 20px; font-family: 'Courier New', monospace; }
+        .payee { margin-top: 30px; border-bottom: 1px solid #000; padding-bottom: 2px; }
+        .amount-words { margin-top: 10px; font-size: 11pt; }
+        .signature { margin-top: 40px; border-top: 1px solid #000; width: 200px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">CHASE</div>
+        <div>Business Banking</div>
+    </div>
+    
+    <div class="account-info">
+        <table>
+            <tr>
+                <td><strong>Account Holder:</strong> IronClad CAS LLC</td>
+                <td><strong>Account Number:</strong> ****3421</td>
+            </tr>
+            <tr>
+                <td><strong>Statement Period:</strong> December 1 - December 31, 2025</td>
+                <td><strong>Business Checking</strong></td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="section-title">ACCOUNT SUMMARY</div>
+    <table style="width: 100%; margin: 10px 0;">
+        <tr>
+            <td>Beginning Balance (12/01/2025)</td>
+            <td class="amount">$15,247.82</td>
+        </tr>
+        <tr>
+            <td>Total Deposits and Credits</td>
+            <td class="amount">$28,450.00</td>
+        </tr>
+        <tr>
+            <td>Total Withdrawals and Debits</td>
+            <td class="amount">$22,891.45</td>
+        </tr>
+        <tr style="border-top: 2px solid #000; font-weight: bold;">
+            <td>Ending Balance (12/31/2025)</td>
+            <td class="amount">$20,806.37</td>
+        </tr>
+    </table>
+    
+    <div class="section-title">TRANSACTION DETAILS</div>
+    <div class="transactions">
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Check #</th>
+                <th class="amount">Withdrawals</th>
+                <th class="amount">Deposits</th>
+                <th class="amount">Balance</th>
+            </tr>
+
+            <tr>
+                <td>12/06/2025</td>
+                <td>Check - Tech Solutions LLC</td>
+                <td>1001</td>
+                <td class="amount">$790.90</td>
+                <td class="amount"></td>
+                <td class="amount">$14,456.92</td>
+            </tr>
+
+            <tr>
+                <td>12/10/2025</td>
+                <td>Check - ABC Office Supplies</td>
+                <td>1005</td>
+                <td class="amount">$1,297.04</td>
+                <td class="amount"></td>
+                <td class="amount">$13,159.88</td>
+            </tr>
+
+            <tr>
+                <td>12/11/2025</td>
+                <td>ACH Credit - Customer Payment</td>
+                <td></td>
+                <td class="amount"></td>
+                <td class="amount">$6,206.45</td>
+                <td class="amount">$19,366.33</td>
+            </tr>
+
+            <tr>
+                <td>12/17/2025</td>
+                <td>ACH Credit - Customer Payment</td>
+                <td></td>
+                <td class="amount"></td>
+                <td class="amount">$6,098.11</td>
+                <td class="amount">$25,464.44</td>
+            </tr>
+
+            <tr>
+                <td>12/17/2025</td>
+                <td>ACH Credit - Customer Payment</td>
+                <td></td>
+                <td class="amount"></td>
+                <td class="amount">$7,121.74</td>
+                <td class="amount">$32,586.18</td>
+            </tr>
+
+            <tr>
+                <td>12/23/2025</td>
+                <td>Check - City Water & Sewer</td>
+                <td>1004</td>
+                <td class="amount">$606.68</td>
+                <td class="amount"></td>
+                <td class="amount">$31,979.51</td>
+            </tr>
+
+            <tr>
+                <td>12/25/2025</td>
+                <td>ACH Credit - Customer Payment</td>
+                <td></td>
+                <td class="amount"></td>
+                <td class="amount">$2,300.47</td>
+                <td class="amount">$34,279.97</td>
+            </tr>
+
+            <tr>
+                <td>12/25/2025</td>
+                <td>ACH Credit - Customer Payment</td>
+                <td></td>
+                <td class="amount"></td>
+                <td class="amount">$6,530.34</td>
+                <td class="amount">$40,810.31</td>
+            </tr>
+
+            <tr>
+                <td>12/30/2025</td>
+                <td>Check - Metro Property Management</td>
+                <td>1002</td>
+                <td class="amount">$2,558.84</td>
+                <td class="amount"></td>
+                <td class="amount">$38,251.46</td>
+            </tr>
+
+            <tr>
+                <td>12/31/2025</td>
+                <td>Check - National Insurance Group</td>
+                <td>1003</td>
+                <td class="amount">$651.88</td>
+                <td class="amount"></td>
+                <td class="amount">$37,599.59</td>
+            </tr>
+
+        </table>
+    </div>
+    
+    <div class="section-title">CHECK IMAGES</div>
+
+    <div class="check-image">
+        <strong>Check #1001</strong>
+        <div class="check">
+            <div class="check-number">#1001</div>
+            <div style="margin-top: 10px;">
+                <strong>IRONCLAD CAS LLC</strong><br>
+                123 Business Way<br>
+                New York, NY 10001
+            </div>
+            <div style="margin-top: 20px;">
+                Date: <span style="font-family: "Courier New", monospace;">12/10/2025</span>
+            </div>
+            <div class="payee">
+                Pay to the Order of: <span style="font-family: "Courier New", monospace;">Smith & Associates Law</span>
+            </div>
+            <div style="margin-top: 10px; text-align: right;">
+                <strong style="font-family: "Courier New", monospace;">$1,247.50</strong>
+            </div>
+            <div class="amount-words" style="font-family: "Courier New", monospace;">
+                One Thousand Two Hundred Forty Seven and 49/100 DOLLARS
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <div>
+                    <strong>CHASE</strong><br>
+                    For: <span style="border-bottom: 1px solid #000; padding: 0 50px;">Office Supplies</span>
+                </div>
+                <div class="signature" style="font-family: "Courier New", monospace;">
+                    Lee Johnson
+                </div>
+            </div>
+            <div style="margin-top: 20px; font-family: 'Courier New', monospace; font-size: 8pt;">
+                :054001204: 123456789: 1001
+            </div>
+        </div>
+    </div>
+
+    <div class="check-image">
+        <strong>Check #1002</strong>
+        <div class="check">
+            <div class="check-number">#1002</div>
+            <div style="margin-top: 10px;">
+                <strong>IRONCLAD CAS LLC</strong><br>
+                123 Business Way<br>
+                New York, NY 10001
+            </div>
+            <div style="margin-top: 20px;">
+                Date: <span style="font-family: cursive;">12/11/2025</span>
+            </div>
+            <div class="payee">
+                Pay to the Order of: <span style="font-family: cursive; font-size: 14pt;">Tech Solutions LLC</span>
+            </div>
+            <div style="margin-top: 10px; text-align: right;">
+                <strong style="font-family: cursive;">$871.17</strong>
+            </div>
+            <div class="amount-words" style="font-family: cursive; font-size: 14pt;">
+                Eight Hundred Seventy One and 17/100 DOLLARS
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <div>
+                    <strong>CHASE</strong><br>
+                    For: <span style="border-bottom: 1px solid #000; padding: 0 50px;">Office Supplies</span>
+                </div>
+                <div class="signature" style="font-family: cursive; font-size: 14pt;">
+                    Lee Johnson
+                </div>
+            </div>
+            <div style="margin-top: 20px; font-family: 'Courier New', monospace; font-size: 8pt;">
+                :054001204: 123456789: 1002
+            </div>
+        </div>
+    </div>
+
+    <div class="check-image">
+        <strong>Check #1003</strong>
+        <div class="check">
+            <div class="check-number">#1003</div>
+            <div style="margin-top: 10px;">
+                <strong>IRONCLAD CAS LLC</strong><br>
+                123 Business Way<br>
+                New York, NY 10001
+            </div>
+            <div style="margin-top: 20px;">
+                Date: <span style="font-family: "Courier New", monospace;">12/12/2025</span>
+            </div>
+            <div class="payee">
+                Pay to the Order of: <span style="font-family: "Courier New", monospace;">City Water & Sewer</span>
+            </div>
+            <div style="margin-top: 10px; text-align: right;">
+                <strong style="font-family: "Courier New", monospace;">$2,055.58</strong>
+            </div>
+            <div class="amount-words" style="font-family: "Courier New", monospace;">
+                Two Thousand Fifty Five and 58/100 DOLLARS
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <div>
+                    <strong>CHASE</strong><br>
+                    For: <span style="border-bottom: 1px solid #000; padding: 0 50px;">Office Supplies</span>
+                </div>
+                <div class="signature" style="font-family: "Courier New", monospace;">
+                    Lee Johnson
+                </div>
+            </div>
+            <div style="margin-top: 20px; font-family: 'Courier New', monospace; font-size: 8pt;">
+                :054001204: 123456789: 1003
+            </div>
+        </div>
+    </div>
+
+    <div class="check-image">
+        <strong>Check #1004</strong>
+        <div class="check">
+            <div class="check-number">#1004</div>
+            <div style="margin-top: 10px;">
+                <strong>IRONCLAD CAS LLC</strong><br>
+                123 Business Way<br>
+                New York, NY 10001
+            </div>
+            <div style="margin-top: 20px;">
+                Date: <span style="font-family: cursive;">12/22/2025</span>
+            </div>
+            <div class="payee">
+                Pay to the Order of: <span style="font-family: cursive; font-size: 14pt;">National Insurance Group</span>
+            </div>
+            <div style="margin-top: 10px; text-align: right;">
+                <strong style="font-family: cursive;">$2,049.42</strong>
+            </div>
+            <div class="amount-words" style="font-family: cursive; font-size: 14pt;">
+                Two Thousand Forty Nine and 41/100 DOLLARS
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <div>
+                    <strong>CHASE</strong><br>
+                    For: <span style="border-bottom: 1px solid #000; padding: 0 50px;">Office Supplies</span>
+                </div>
+                <div class="signature" style="font-family: cursive; font-size: 14pt;">
+                    Lee Johnson
+                </div>
+            </div>
+            <div style="margin-top: 20px; font-family: 'Courier New', monospace; font-size: 8pt;">
+                :054001204: 123456789: 1004
+            </div>
+        </div>
+    </div>
+
+    <div class="check-image">
+        <strong>Check #1005</strong>
+        <div class="check">
+            <div class="check-number">#1005</div>
+            <div style="margin-top: 10px;">
+                <strong>IRONCLAD CAS LLC</strong><br>
+                123 Business Way<br>
+                New York, NY 10001
+            </div>
+            <div style="margin-top: 20px;">
+                Date: <span style="font-family: "Courier New", monospace;">12/13/2025</span>
+            </div>
+            <div class="payee">
+                Pay to the Order of: <span style="font-family: "Courier New", monospace;">Green Landscaping Co</span>
+            </div>
+            <div style="margin-top: 10px; text-align: right;">
+                <strong style="font-family: "Courier New", monospace;">$2,609.12</strong>
+            </div>
+            <div class="amount-words" style="font-family: "Courier New", monospace;">
+                Two Thousand Six Hundred Nine and 12/100 DOLLARS
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <div>
+                    <strong>CHASE</strong><br>
+                    For: <span style="border-bottom: 1px solid #000; padding: 0 50px;">Office Supplies</span>
+                </div>
+                <div class="signature" style="font-family: "Courier New", monospace;">
+                    Lee Johnson
+                </div>
+            </div>
+            <div style="margin-top: 20px; font-family: 'Courier New', monospace; font-size: 8pt;">
+                :054001204: 123456789: 1005
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; font-size: 8pt; color: #666; text-align: center;">
+        Member FDIC | Equal Housing Lender<br>
+        For questions about your account, call 1-800-935-9935
+    </div>
+</body>
+</html>
